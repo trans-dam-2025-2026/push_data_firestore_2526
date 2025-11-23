@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
 
     final users = await db.users.get();
     for (final user in users) {
-      await db.users.doc(user.id).delete();
+      await db.users(user.id).delete();
       setState(() {
         _description.insert(0, "Suppression de l'utilisateur ${user.id}");
       });
@@ -97,35 +97,35 @@ class _HomeState extends State<Home> {
 
     final teamsSnapshot = await db.teams.get();
     for (final team in teamsSnapshot) {
-      final transactions = await db.teams.doc(team.id).transactions.get();
+      final transactions = await db.teams(team.id).transactions.get();
       for (final transaction in transactions) {
         final concerns = await db.teams
-            .doc(team.id)
+            (team.id)
             .transactions
-            .doc(transaction.id)
+            (transaction.id)
             .concerns
             .get();
         for (final concern in concerns) {
           await db.teams
-              .doc(team.id)
+              (team.id)
               .transactions
-              .doc(transaction.id)
+              (transaction.id)
               .concerns
-              .doc(concern.id)
+              (concern.id)
               .delete();
           setState(() {
             _description.insert(
                 0, "Suppression de l'utilisateur concerné ${concern.email}");
           });
         }
-        await db.teams.doc(team.id).transactions.doc(transaction.id).delete();
+        await db.teams(team.id).transactions(transaction.id).delete();
 
         setState(() {
           _description.insert(
               0, "Suppression de la transaction concerné ${transaction.title}");
         });
       }
-      await db.teams.doc(team.id).delete();
+      await db.teams(team.id).delete();
 
       setState(() {
         _description.insert(0, "Suppression de l'équipe ${team.title}");
